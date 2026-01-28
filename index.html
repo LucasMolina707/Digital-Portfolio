@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Portfolio | OS Interface</title>
+    <style>
+        :root {
+            --negro: #050505;
+            --azul-electrico: #00d4ff;
+            --morado-tech: #9d00ff;
+            --plata: #e0e0e0;
+            --blanco: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--negro);
+            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
+            color: var(--plata);
+            font-family: 'Segoe UI', Consolas, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* --- BARRA DE TAREAS (TOP BAR) --- */
+        .taskbar {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid var(--azul-electrico);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .os-title {
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--blanco);
+            text-shadow: 0 0 10px var(--azul-electrico);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .main-desktop {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* --- SECCIÓN DE ENTRADAS --- */
+        .content-area {
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--glass);
+            border: 1px solid var(--morado-tech);
+            border-radius: 5px;
+            color: var(--blanco);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #searchInput:focus { border-color: var(--azul-electrico); box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            transition: 0.3s;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .card:hover {
+            border-color: var(--azul-electrico);
+            transform: scale(1.02);
+            background: rgba(157, 0, 255, 0.05);
+        }
+
+        .card h2 { color: var(--azul-electrico); font-size: 1.2rem; margin: 5px 0; }
+        .card .category { font-size: 0.7rem; text-transform: uppercase; color: var(--morado-tech); font-weight: bold; }
+        .card a { color: var(--blanco); text-decoration: none; font-size: 0.9rem; border: 1px solid var(--morado-tech); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; }
+        .card a:hover { background: var(--morado-tech); }
+
+        /* --- SIDEBAR (WIDGETS) --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .widget {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #clock { font-size: 2rem; color: var(--azul-electrico); font-family: 'Courier New', Courier, monospace; }
+        #date { color: var(--plata); margin-bottom: 10px; }
+
+        /* Alarma / Timer */
+        .alarm-widget {
+            border-left: 4px solid var(--morado-tech);
+        }
+
+        .timer-display { font-size: 1.5rem; margin: 10px 0; color: var(--blanco); }
+        
+        button.btn-os {
+            background: transparent;
+            border: 1px solid var(--azul-electrico);
+            color: var(--azul-electrico);
+            padding: 8px 15px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        button.btn-os.active { background: var(--azul-electrico); color: var(--negro); }
+        button.btn-os:disabled { border-color: #555; color: #555; }
+
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--negro); }
+        ::-webkit-scrollbar-thumb { background: var(--morado-tech); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="taskbar">
+    <div class="os-title">DIGITAL PORTFOLIO v1.0</div>
+    <div id="status-light" style="color: var(--azul-electrico); font-size: 0.8rem;">● SYSTEM ONLINE</div>
+</div>
+
+<main class="main-desktop">
+    <section class="content-area">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Ejecutar búsqueda de archivos (título, categoría, tags)...">
+        </div>
+
+        <div class="grid-container" id="gridEntries">
+            <article class="card" data-keywords="google buscar" data-category="Web" data-date="2026-01-27">
+                <span class="category">Web</span>
+                <h2>Google Access</h2>
+                <p>Navegador de búsqueda global.</p>
+                <a href="https://google.com" target="_blank">EJECUTAR</a>
+            </article>
+
+            <article class="card" data-keywords="ia gemini" data-category="AI" data-date="2026-01-28">
+                <span class="category">AI</span>
+                <h2>Gemini Terminal</h2>
+                <p>Inteligencia artificial avanzada.</p>
+                <a href="https://gemini.google.com" target="_blank">EJECUTAR</a>
+            </article>
+
+            </div>
+        <p id="noResults" style="display:none; text-align: center; color: var(--morado-tech);">SIN COINCIDENCIAS EN EL SISTEMA</p>
+    </section>
+
+    <aside class="sidebar">
+        <div class="widget">
+            <div id="date">--/--/----</div>
+            <div id="clock">00:00:00</div>
+        </div>
+
+        <div class="widget alarm-widget">
+            <div style="font-size: 0.8rem; color: var(--morado-tech);">ENFOQUE DE TRABAJO</div>
+            <div class="timer-display" id="timer">25:00</div>
+            <button class="btn-os" id="startBtn">ACTIVAR ALARMA</button>
+            <p id="alarmMsg" style="font-size: 0.7rem; margin-top: 10px; color: #888;">Ciclo: 25 min</p>
+        </div>
+    </aside>
+</main>
+
+<script>
+    // --- LÓGICA DEL RELOJ Y CALENDARIO ---
+    function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+        
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('date').textContent = now.toLocaleDateString('es-ES', options);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // --- LÓGICA DEL BUSCADOR ---
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let cards = document.querySelectorAll('.card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            let text = card.innerText.toLowerCase() + card.getAttribute('data-keywords').toLowerCase();
+            if (text.includes(filter)) {
+                card.style.display = "";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
+        });
+        document.getElementById('noResults').style.display = visibleCount === 0 ? "block" : "none";
+    });
+
+    // --- LÓGICA DE ALARMA (POMODORO 25 MIN) ---
+    let timerInterval;
+    let timeLeft = 25 * 60;
+    let isRunning = false;
+
+    const timerDisplay = document.getElementById('timer');
+    const startBtn = document.getElementById('startBtn');
+
+    startBtn.addEventListener('click', () => {
+        if (!isRunning) {
+            isRunning = true;
+            startBtn.textContent = "DESACTIVAR / REINICIAR";
+            startBtn.classList.add('active');
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("¡Alarma! Han pasado 25 minutos de enfoque.");
+                    resetTimer();
+                }
+            }, 1000);
+        } else {
+            resetTimer();
+        }
+    });
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timeLeft = 25 * 60;
+        updateTimerDisplay();
+        startBtn.textContent = "ACTIVAR ALARMA";
+        startBtn.classList.remove('active');
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+</script>
+
+</body>
+</html>
