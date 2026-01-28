@@ -3,182 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber-Tech OS | Portfolio Hub</title>
+    <title>Cyber-Tech OS | V2.0 System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
         /* =========================================
-           1. VARIABLES & RESET
+           1. CORE SYSTEM VARIABLES (CENTRALIZED)
            ========================================= */
         :root {
-            --bg-color: #050505;
-            --primary: #00d4ff;     /* Azul Neón */
-            --secondary: #9d00ff;   /* Morado Tech */
+            /* Palette */
+            --bg-deep: #050505;
+            --bg-panel: rgba(20, 20, 25, 0.65);
+            --bg-window: #0a0a0f;
+            
+            --primary: #00d4ff;     /* Cyan Neon */
+            --primary-dim: rgba(0, 212, 255, 0.1);
+            --secondary: #9d00ff;   /* Purple Tech */
+            --secondary-dim: rgba(157, 0, 255, 0.2);
+            --alert: #ff4757;
+            --success: #2ed573;
+
+            /* Text */
             --text-main: #e0e0e0;
             --text-dim: #a0a0a0;
-            --glass-bg: rgba(20, 20, 25, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --blur: 12px;
-            --shadow-glow: 0 0 15px rgba(0, 212, 255, 0.2);
-            --font-head: 'Orbitron', sans-serif;
+
+            /* Effects */
+            --blur: 16px;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --neon-glow: 0 0 10px rgba(0, 212, 255, 0.3);
+            
+            /* Typography */
+            --font-ui: 'Orbitron', sans-serif;
             --font-body: 'Inter', sans-serif;
+            
+            /* Layout */
+            --header-height: 40px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--secondary) var(--bg-color);
-        }
-
+        /* =========================================
+           2. RESET & BASE
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-deep);
             color: var(--text-main);
             font-family: var(--font-body);
             height: 100vh;
-            overflow: hidden; /* Evita scroll en el body, scrolleamos secciones internas */
+            overflow: hidden;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(157, 0, 255, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.08) 0%, transparent 20%);
+                linear-gradient(rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.9)),
+                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 212, 255, 0.03) 1px, rgba(0, 212, 255, 0.03) 2px);
+            background-size: cover;
+            user-select: none; /* Desktop feel */
         }
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
         ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Helpers */
+        .hidden { display: none !important; }
+        .glass {
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
 
         /* =========================================
-           2. LAYOUT PRINCIPAL
+           3. LAYOUT GRID
            ========================================= */
-        .os-container {
+        .os-layout {
             display: grid;
-            grid-template-columns: 80px 1fr 300px; /* Layout Tripartito */
+            grid-template-columns: 70px 1fr 320px;
             height: 100vh;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1920px;
+            gap: 15px;
+            padding: 15px;
+            max-width: 2000px;
             margin: 0 auto;
         }
 
-        /* Mixin Glassmorphism */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
         /* =========================================
-           3. PANEL IZQUIERDO - LAUNCHER
+           4. SIDEBAR (LAUNCHER)
            ========================================= */
         .launcher {
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            padding-top: 30px;
-            gap: 25px;
-            z-index: 100;
+            padding-top: 20px;
+            gap: 20px;
+            z-index: 50;
         }
 
-        .app-icon {
-            width: 50px;
-            height: 50px;
+        .app-btn {
+            width: 48px;
+            height: 48px;
             border-radius: 12px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid transparent;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--primary);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            border: 1px solid transparent;
         }
 
-        .app-icon:hover {
-            background: rgba(0, 212, 255, 0.15);
-            box-shadow: var(--shadow-glow);
+        .app-btn:hover, .app-btn:focus-visible {
+            color: var(--primary);
             border-color: var(--primary);
+            background: var(--primary-dim);
+            box-shadow: var(--neon-glow);
             transform: translateY(-2px);
         }
 
-        .app-icon::after {
-            content: attr(data-tooltip);
+        /* Tooltip */
+        .app-btn::after {
+            content: attr(aria-label);
             position: absolute;
             left: 60px;
-            background: var(--secondary);
-            padding: 4px 8px;
+            background: var(--bg-window);
+            border: 1px solid var(--secondary);
+            padding: 5px 10px;
             border-radius: 4px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            font-family: var(--font-ui);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s;
+            transition: opacity 0.2s;
             white-space: nowrap;
+            z-index: 100;
         }
-
-        .app-icon:hover::after { opacity: 1; }
+        .app-btn:hover::after { opacity: 1; }
 
         /* =========================================
-           4. PANEL CENTRAL - EXPLORADOR DE PROYECTOS
+           5. MAIN CONTENT (EXPLORER)
            ========================================= */
         .explorer {
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .explorer-top {
             padding: 25px;
+            border-bottom: var(--glass-border);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .explorer-title {
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        .explorer-title span { color: var(--primary); }
+
+        .search-wrapper {
             position: relative;
-            overflow-y: auto;
+            max-width: 100%;
         }
 
-        .explorer-header {
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            font-family: var(--font-head);
-            font-size: 2rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            background: linear-gradient(90deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .search-bar {
-            position: relative;
-            max-width: 600px;
-        }
-
-        .search-bar input {
+        .search-input {
             width: 100%;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             border: 1px solid var(--glass-border);
-            padding: 12px 45px 12px 20px;
-            border-radius: 30px;
+            padding: 12px 40px 12px 15px;
+            border-radius: 8px;
             color: white;
             font-family: var(--font-body);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: border-color 0.3s;
         }
+        .search-input:focus { border-color: var(--primary); }
 
-        .search-bar input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-
-        .search-bar i {
+        .search-icon {
             position: absolute;
-            right: 20px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-dim);
         }
 
-        /* GRID DE PROYECTOS */
+        /* Project Grid */
+        .projects-scroll {
+            padding: 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -186,604 +210,651 @@
         }
 
         .project-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.02);
+            border: var(--glass-border);
             border-radius: 12px;
             padding: 20px;
-            transition: transform 0.3s, background 0.3s, border-color 0.3s;
+            transition: 0.2s;
             position: relative;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .project-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.06);
             border-color: var(--secondary);
+            background: rgba(255,255,255,0.05);
+            transform: translateY(-3px);
         }
 
-        .card-header {
+        .card-head {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
             margin-bottom: 15px;
+            font-size: 1.2rem;
         }
+        .card-icon { color: var(--secondary); }
+        .card-link { color: var(--text-dim); cursor: pointer; }
+        .card-link:hover { color: var(--primary); }
 
-        .folder-icon { color: var(--secondary); font-size: 1.5rem; }
-        .external-link { color: var(--text-dim); cursor: pointer; transition: color 0.2s; }
-        .external-link:hover { color: var(--primary); }
-
-        .card-title {
-            font-family: var(--font-head);
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-            color: white;
-        }
-
-        .card-meta {
-            font-size: 0.75rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-            display: inline-block;
-            background: rgba(0, 212, 255, 0.1);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        .card-desc {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .btn-action {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 6px 16px;
-            border-radius: 20px;
+        .card-title { font-family: var(--font-ui); color: white; font-size: 1rem; margin-bottom: 5px; }
+        .card-tag { font-size: 0.7rem; color: var(--primary); background: var(--primary-dim); padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .card-body { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 20px; flex: 1; }
+        
+        .card-btn {
+            align-self: flex-end;
             font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            color: var(--primary);
             text-decoration: none;
+            border: 1px solid var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: 0.2s;
         }
-
-        .btn-action:hover {
-            background: var(--primary);
-            color: black;
-            box-shadow: 0 0 10px var(--primary);
-        }
+        .card-btn:hover { background: var(--primary); color: #000; }
 
         /* =========================================
-           5. PANEL DERECHO - UTILIDADES
+           6. WIDGET PANEL (RIGHT)
            ========================================= */
         .utilities {
+            border-radius: 16px;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
             overflow-y: auto;
         }
 
         .widget {
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .widget-title {
-            font-family: var(--font-head);
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 5px;
-        }
-
-        /* Reloj */
-        #clock-display {
-            font-family: var(--font-head);
-            font-size: 2.2rem;
-            text-align: center;
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
-        }
-        #date-display {
-            text-align: center;
-            color: var(--text-main);
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        /* Pomodoro */
-        .pomodoro-display {
-            font-size: 2rem;
-            text-align: center;
-            font-weight: bold;
-            margin: 10px 0;
-            font-variant-numeric: tabular-nums;
-        }
-        .pomodoro-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        .btn-pomo {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-        .btn-start { background: var(--secondary); color: white; }
-        .btn-start:hover { box-shadow: 0 0 10px var(--secondary); }
-        .btn-reset { background: rgba(255,255,255,0.1); color: var(--text-main); }
-
-        /* Alarma */
-        .alarm-input {
-            width: 100%;
             background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 8px;
-            border-radius: 6px;
+            border: var(--glass-border);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .widget-head {
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
             margin-bottom: 10px;
+            letter-spacing: 1px;
         }
-        #alarm-status {
-            font-size: 0.8rem;
-            text-align: center;
-            min-height: 1.2em;
-            color: var(--primary);
-        }
+
+        /* Clock Widget */
+        .clock-time { font-family: var(--font-ui); font-size: 2.2rem; color: var(--primary); text-align: center; text-shadow: var(--neon-glow); }
+        .clock-date { text-align: center; font-size: 0.85rem; color: var(--text-dim); margin-top: 5px; }
+
+        /* Pomodoro Widget */
+        .pomo-timer { font-size: 2.5rem; text-align: center; font-family: monospace; color: white; margin: 10px 0; }
+        .pomo-actions { display: flex; gap: 10px; }
+        .btn-sys { flex: 1; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: 600; font-family: var(--font-ui); font-size: 0.7rem; transition: 0.2s; }
+        
+        .btn-sys.primary { background: var(--secondary); color: white; }
+        .btn-sys.primary:hover { box-shadow: 0 0 10px var(--secondary); }
+        .btn-sys.secondary { background: rgba(255,255,255,0.1); color: var(--text-main); }
+        .btn-sys.secondary:hover { background: rgba(255,255,255,0.2); }
+
+        /* Alarm Widget */
+        .alarm-ctrl { display: flex; gap: 10px; flex-direction: column; }
+        .sys-input { background: rgba(0,0,0,0.3); border: var(--glass-border); color: white; padding: 8px; border-radius: 5px; font-family: var(--font-body); width: 100%; }
+        .alarm-state { font-size: 0.8rem; text-align: center; margin-top: 5px; min-height: 1.2em; color: var(--alert); }
+        .alarm-state.active { color: var(--success); }
 
         /* =========================================
-           6. VENTANAS FLOTANTES (OS UX)
+           7. WINDOW MANAGER (THE OS CORE)
            ========================================= */
         .window {
             position: absolute;
-            background: #0a0a0f; /* Fondo más sólido para legibilidad */
-            width: 320px;
-            border-radius: 10px;
-            border: 1px solid var(--secondary);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            width: 340px;
+            background: var(--bg-window);
+            border: 1px solid var(--secondary-dim);
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
-            top: 20%;
-            left: 30%;
-            display: none; /* Oculto por defecto */
-            z-index: 1000;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none; /* Ignora clicks cuando está cerrado/oculto */
         }
 
-        .window-header {
-            background: rgba(157, 0, 255, 0.2);
-            padding: 10px 15px;
-            cursor: grab;
+        .window.open {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .window.active-focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.15);
+        }
+
+        .win-header {
+            height: var(--header-height);
+            background: linear-gradient(90deg, rgba(157, 0, 255, 0.1), transparent);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            cursor: grab;
             user-select: none;
         }
-        
-        .window-header:active { cursor: grabbing; }
+        .win-header:active { cursor: grabbing; background: rgba(157, 0, 255, 0.2); }
 
-        .window-title { font-family: var(--font-head); font-size: 0.85rem; color: white; }
-        
-        .btn-close {
-            color: #ff5f56;
-            cursor: pointer;
-            font-size: 1rem;
-        }
+        .win-title { font-family: var(--font-ui); font-size: 0.8rem; color: white; display: flex; align-items: center; gap: 8px; }
+        .win-controls i { color: #ff5f56; cursor: pointer; padding: 5px; transition: 0.2s; }
+        .win-controls i:hover { color: #ff3b30; transform: scale(1.1); }
 
-        .window-body {
-            padding: 15px;
-            color: var(--text-main);
-        }
+        .win-body { padding: 15px; color: var(--text-main); }
 
-        /* Estilos Calculadora */
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .calc-display {
-            grid-column: span 4;
-            background: rgba(0,0,0,0.5);
-            color: var(--primary);
-            text-align: right;
-            padding: 10px;
-            font-size: 1.5rem;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            font-family: 'Courier New', monospace;
-        }
-        .btn-calc {
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-calc:hover { background: rgba(255,255,255,0.2); }
-        .btn-calc.accent { background: var(--secondary); }
+        /* Calculator Specifics */
+        .calc-screen { width: 100%; background: rgba(0,0,0,0.5); border: var(--glass-border); color: var(--primary); text-align: right; font-family: monospace; font-size: 1.5rem; padding: 12px; margin-bottom: 15px; border-radius: 6px; overflow-x: auto; }
+        .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .key { padding: 12px; background: rgba(255,255,255,0.05); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; transition: 0.1s; }
+        .key:hover { background: rgba(255,255,255,0.1); }
+        .key.op { color: var(--secondary); background: rgba(157, 0, 255, 0.1); }
+        .key.op:hover { background: rgba(157, 0, 255, 0.25); }
+        .key.enter { background: var(--secondary); color: white; }
 
-        /* Estilos Notas */
-        textarea.notes-area {
-            width: 100%;
-            height: 200px;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            resize: none;
-            outline: none;
-            font-family: var(--font-body);
-        }
+        /* Notepad Specifics */
+        .notepad-area { width: 100%; height: 250px; background: transparent; border: none; color: var(--text-main); font-family: monospace; resize: none; font-size: 0.9rem; line-height: 1.5; }
 
         /* =========================================
-           7. RESPONSIVE
+           8. RESPONSIVE
            ========================================= */
         @media (max-width: 900px) {
-            .os-container {
+            .os-layout {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto 1fr auto;
                 height: 100vh;
-                overflow-y: auto;
-            }
-
-            body { overflow: auto; } /* Permitir scroll en móvil */
-
-            .launcher {
-                flex-direction: row;
                 padding: 10px;
-                height: auto;
-                justify-content: space-around;
+                gap: 10px;
             }
-
-            .window {
-                width: 90%;
+            .launcher { flex-direction: row; height: 60px; padding: 0; justify-content: space-evenly; width: 100%; }
+            .utilities { display: none; /* Simplificado para móvil */ }
+            
+            /* Window override para móvil */
+            .window.open {
+                width: 90% !important;
                 left: 5% !important;
                 top: 10% !important;
+                position: fixed;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="os-container">
-        <aside class="glass-panel launcher">
-            <div class="app-icon" data-tooltip="Calculadora" onclick="openWindow('window-calc')">
+    <div class="os-layout">
+        <aside class="glass launcher">
+            <button class="app-btn" aria-label="Abrir Calculadora" onclick="CyberOS.WindowManager.open('app-calc')">
                 <i class="fa-solid fa-calculator"></i>
-            </div>
-            <div class="app-icon" data-tooltip="Notas" onclick="openWindow('window-notes')">
+            </button>
+            <button class="app-btn" aria-label="Notas Rápidas" onclick="CyberOS.WindowManager.open('app-notes')">
                 <i class="fa-solid fa-note-sticky"></i>
-            </div>
-            <div class="app-icon" data-tooltip="Github" onclick="window.open('https://github.com', '_blank')">
+            </button>
+            <button class="app-btn" aria-label="GitHub Profile" onclick="window.open('https://github.com', '_blank')">
                 <i class="fa-brands fa-github"></i>
-            </div>
+            </button>
         </aside>
 
-        <main class="glass-panel explorer">
-            <div class="explorer-header">
-                <h1>// PROYECTOS_</h1>
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Buscar por nombre, categoría o tecnología...">
-                    <i class="fa-solid fa-search"></i>
+        <main class="glass explorer">
+            <header class="explorer-top">
+                <h1 class="explorer-title">SYS // <span>PORTFOLIO</span></h1>
+                <div class="search-wrapper">
+                    <input type="text" id="projectSearch" class="search-input" placeholder="Filtrar por nombre, tecnología o stack...">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
                 </div>
-            </div>
+            </header>
+            
+            <div class="projects-scroll">
+                <div class="projects-grid" id="projectGrid">
+                    <article class="project-card" data-tags="react frontend dashboard ui">
+                        <div class="card-head">
+                            <i class="fa-regular fa-folder-open card-icon"></i>
+                            <i class="fa-solid fa-arrow-up-right-from-square card-link"></i>
+                        </div>
+                        <h3 class="card-title">Cyber Dashboard</h3>
+                        <span class="card-tag">React / D3.js</span>
+                        <p class="card-body">Panel administrativo futurista con visualización de datos en tiempo real.</p>
+                        <a href="#" class="card-btn">Ver Proyecto</a>
+                    </article>
 
-            <div class="projects-grid" id="projects-container">
-                
-                <article class="project-card" data-tags="react frontend dashboard">
-                    <div class="card-header">
-                        <i class="fa-regular fa-folder-open folder-icon"></i>
-                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
-                    </div>
-                    <h3 class="card-title">Cyber Dashboard UI</h3>
-                    <span class="card-meta">Dashboard • 2023</span>
-                    <p class="card-desc">Interfaz administrativa React con visualización de datos en tiempo real y tema oscuro.</p>
-                    <div class="card-footer">
-                        <a href="#" class="btn-action">Ver Demo</a>
-                    </div>
-                </article>
+                    <article class="project-card" data-tags="nodejs backend api mongodb">
+                        <div class="card-head">
+                            <i class="fa-solid fa-server card-icon"></i>
+                            <i class="fa-solid fa-arrow-up-right-from-square card-link"></i>
+                        </div>
+                        <h3 class="card-title">Nexus Core API</h3>
+                        <span class="card-tag">Node.js / Express</span>
+                        <p class="card-body">Arquitectura de microservicios escalable con autenticación JWT.</p>
+                        <a href="#" class="card-btn">Ver Docs</a>
+                    </article>
 
-                <article class="project-card" data-tags="api backend nodejs">
-                    <div class="card-header">
-                        <i class="fa-solid fa-server folder-icon"></i>
-                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
-                    </div>
-                    <h3 class="card-title">Nexus API</h3>
-                    <span class="card-meta">Backend • 2024</span>
-                    <p class="card-desc">API RESTful escalable construida con Node.js, Express y MongoDB con autenticación JWT.</p>
-                    <div class="card-footer">
-                        <a href="#" class="btn-action">Docs</a>
-                    </div>
-                </article>
-
-                <article class="project-card" data-tags="threejs 3d design">
-                    <div class="card-header">
-                        <i class="fa-solid fa-cube folder-icon"></i>
-                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
-                    </div>
-                    <h3 class="card-title">Holo-Viewer 3D</h3>
-                    <span class="card-meta">WebGL • 2023</span>
-                    <p class="card-desc">Visor de modelos 3D interactivo utilizando Three.js con soporte para texturas PBR.</p>
-                    <div class="card-footer">
-                        <a href="#" class="btn-action">Explorar</a>
-                    </div>
-                </article>
-
-                <article class="project-card" data-tags="ai python machine learning">
-                    <div class="card-header">
-                        <i class="fa-solid fa-brain folder-icon"></i>
-                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
-                    </div>
-                    <h3 class="card-title">NeuroPrediction</h3>
-                    <span class="card-meta">AI • 2024</span>
-                    <p class="card-desc">Modelo de predicción de series temporales utilizando Python y TensorFlow.</p>
-                    <div class="card-footer">
-                        <a href="#" class="btn-action">Repo</a>
-                    </div>
-                </article>
+                    <article class="project-card" data-tags="threejs webgl 3d">
+                        <div class="card-head">
+                            <i class="fa-solid fa-cube card-icon"></i>
+                            <i class="fa-solid fa-arrow-up-right-from-square card-link"></i>
+                        </div>
+                        <h3 class="card-title">HoloRender Engine</h3>
+                        <span class="card-tag">Three.js</span>
+                        <p class="card-body">Motor de renderizado WebGL para visualización de productos en e-commerce.</p>
+                        <a href="#" class="card-btn">Demo</a>
+                    </article>
+                    
+                     <article class="project-card" data-tags="python ai ml">
+                        <div class="card-head">
+                            <i class="fa-solid fa-brain card-icon"></i>
+                            <i class="fa-solid fa-arrow-up-right-from-square card-link"></i>
+                        </div>
+                        <h3 class="card-title">Neural Net V1</h3>
+                        <span class="card-tag">Python / TensorFlow</span>
+                        <p class="card-body">Clasificador de imágenes entrenado con dataset personalizado.</p>
+                        <a href="#" class="card-btn">Repo</a>
+                    </article>
+                </div>
             </div>
         </main>
 
-        <aside class="glass-panel utilities">
-            
+        <aside class="glass utilities">
             <div class="widget">
-                <div class="widget-title">Sistema :: Hora Local</div>
-                <div id="clock-display">00:00:00</div>
-                <div id="date-display">Cargando fecha...</div>
+                <div class="widget-head">SYSTEM :: TIME</div>
+                <div class="clock-time" id="sys-clock">00:00</div>
+                <div class="clock-date" id="sys-date">...</div>
             </div>
 
             <div class="widget">
-                <div class="widget-title">Focus :: Protocol</div>
-                <div class="pomodoro-display" id="pomo-timer">25:00</div>
-                <div class="pomodoro-controls">
-                    <button class="btn-pomo btn-start" id="btn-pomo-start">INICIAR</button>
-                    <button class="btn-pomo btn-reset" id="btn-pomo-reset">RESET</button>
+                <div class="widget-head">FOCUS :: MODULE</div>
+                <div class="pomo-timer" id="pomo-display">25:00</div>
+                <div class="pomo-actions">
+                    <button class="btn-sys primary" id="pomo-toggle">START</button>
+                    <button class="btn-sys secondary" id="pomo-reset">RESET</button>
                 </div>
             </div>
 
             <div class="widget">
-                <div class="widget-title">Alerta :: Prog</div>
-                <input type="time" class="alarm-input" id="alarm-input">
-                <div id="alarm-status">--:--</div>
+                <div class="widget-head">ALARM :: SET</div>
+                <div class="alarm-ctrl">
+                    <input type="time" class="sys-input" id="alarm-input">
+                    <button class="btn-sys secondary" id="alarm-set-btn">ACTIVAR</button>
+                </div>
+                <div class="alarm-state" id="alarm-msg">Inactivo</div>
             </div>
-
         </aside>
     </div>
 
-    <div class="window" id="window-calc">
-        <div class="window-header" id="header-calc">
-            <span class="window-title">CALC.EXE</span>
-            <i class="fa-solid fa-xmark btn-close" onclick="closeWindow('window-calc')"></i>
+    <div class="window" id="app-calc" style="top: 150px; left: 150px;">
+        <div class="win-header">
+            <div class="win-title"><i class="fa-solid fa-calculator"></i> CALC_V2.EXE</div>
+            <div class="win-controls">
+                <i class="fa-solid fa-xmark" aria-label="Cerrar" onclick="CyberOS.WindowManager.close('app-calc')"></i>
+            </div>
         </div>
-        <div class="window-body">
-            <div class="calc-display" id="calc-res">0</div>
-            <div class="calc-grid">
-                <button class="btn-calc" onclick="calcInput('7')">7</button>
-                <button class="btn-calc" onclick="calcInput('8')">8</button>
-                <button class="btn-calc" onclick="calcInput('9')">9</button>
-                <button class="btn-calc accent" onclick="calcInput('/')">÷</button>
-                <button class="btn-calc" onclick="calcInput('4')">4</button>
-                <button class="btn-calc" onclick="calcInput('5')">5</button>
-                <button class="btn-calc" onclick="calcInput('6')">6</button>
-                <button class="btn-calc accent" onclick="calcInput('*')">×</button>
-                <button class="btn-calc" onclick="calcInput('1')">1</button>
-                <button class="btn-calc" onclick="calcInput('2')">2</button>
-                <button class="btn-calc" onclick="calcInput('3')">3</button>
-                <button class="btn-calc accent" onclick="calcInput('-')">-</button>
-                <button class="btn-calc" onclick="calcInput('0')">0</button>
-                <button class="btn-calc" onclick="calcClear()">C</button>
-                <button class="btn-calc accent" onclick="calcResult()">=</button>
-                <button class="btn-calc accent" onclick="calcInput('+')">+</button>
+        <div class="win-body">
+            <div class="calc-screen" id="calc-display">0</div>
+            <div class="calc-keys">
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('7')">7</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('8')">8</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('9')">9</button>
+                <button class="key op" onclick="CyberOS.Apps.Calculator.input('/')">÷</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('4')">4</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('5')">5</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('6')">6</button>
+                <button class="key op" onclick="CyberOS.Apps.Calculator.input('*')">×</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('1')">1</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('2')">2</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('3')">3</button>
+                <button class="key op" onclick="CyberOS.Apps.Calculator.input('-')">-</button>
+                <button class="key op" onclick="CyberOS.Apps.Calculator.clear()">C</button>
+                <button class="key" onclick="CyberOS.Apps.Calculator.input('0')">0</button>
+                <button class="key enter" onclick="CyberOS.Apps.Calculator.calculate()">=</button>
+                <button class="key op" onclick="CyberOS.Apps.Calculator.input('+')">+</button>
             </div>
         </div>
     </div>
 
-    <div class="window" id="window-notes">
-        <div class="window-header" id="header-notes">
-            <span class="window-title">NOTES.TXT</span>
-            <i class="fa-solid fa-xmark btn-close" onclick="closeWindow('window-notes')"></i>
+    <div class="window" id="app-notes" style="top: 200px; left: 200px;">
+        <div class="win-header">
+            <div class="win-title"><i class="fa-solid fa-note-sticky"></i> NOTES_LOCAL.TXT</div>
+            <div class="win-controls">
+                <i class="fa-solid fa-xmark" aria-label="Cerrar" onclick="CyberOS.WindowManager.close('app-notes')"></i>
+            </div>
         </div>
-        <div class="window-body">
-            <textarea class="notes-area" placeholder="Escribe tus ideas aquí..."></textarea>
+        <div class="win-body">
+            <textarea class="notepad-area" placeholder="Escribe aquí. Los datos se pierden al recargar (modo seguro)..."></textarea>
         </div>
     </div>
 
     <script>
-        /* =========================================
-           1. RELOJ Y ALARMA
-           ========================================= */
-        let alarmTime = null;
-        const alarmInput = document.getElementById('alarm-input');
-        const alarmStatus = document.getElementById('alarm-status');
-
-        function updateClock() {
-            const now = new Date();
-            // Hora
-            const timeString = now.toLocaleTimeString('es-ES', { hour12: false });
-            document.getElementById('clock-display').textContent = timeString;
+        /**
+         * CyberOS Global Namespace
+         * Utiliza IIFE (Immediately Invoked Function Expression) para encapsulamiento.
+         */
+        const CyberOS = (() => {
             
-            // Fecha
-            const dateString = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('date-display').textContent = dateString;
+            // --- MODULE: UTILS ---
+            const Utils = {
+                getElement: (id) => document.getElementById(id),
+                padTime: (num) => num.toString().padStart(2, '0'),
+                clamp: (val, min, max) => Math.min(Math.max(val, min), max)
+            };
 
-            // Chequeo Alarma
-            if (alarmTime) {
-                const currentHM = now.toTimeString().slice(0, 5); // HH:MM
-                if (currentHM === alarmTime && now.getSeconds() === 0) {
-                    alert('⚠️ ALERTA DEL SISTEMA: Hora programada alcanzada.');
-                    alarmTime = null; // Resetear alarma
-                    alarmStatus.textContent = "Alarma finalizada";
-                    alarmStatus.style.color = "var(--text-dim)";
-                }
-            }
-        }
+            // --- MODULE: WINDOW MANAGER ---
+            const WindowManager = (() => {
+                let zIndex = 100;
+                let activeDrag = null;
+                let startX, startY, initialLeft, initialTop;
 
-        alarmInput.addEventListener('change', (e) => {
-            alarmTime = e.target.value;
-            alarmStatus.textContent = `Alarma activa: ${alarmTime}`;
-            alarmStatus.style.color = "var(--primary)";
-        });
+                // Bring window to front
+                const focus = (winEl) => {
+                    zIndex++;
+                    winEl.style.zIndex = zIndex;
+                    // Visual focus handling
+                    document.querySelectorAll('.window').forEach(w => w.classList.remove('active-focus'));
+                    winEl.classList.add('active-focus');
+                };
 
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        /* =========================================
-           2. POMODORO TIMER
-           ========================================= */
-        let pomoInterval;
-        let pomoTime = 25 * 60; // 25 minutos en segundos
-        let isRunning = false;
-
-        const pomoDisplay = document.getElementById('pomo-timer');
-        const btnStart = document.getElementById('btn-pomo-start');
-        const btnReset = document.getElementById('btn-pomo-reset');
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        btnStart.addEventListener('click', () => {
-            if (isRunning) {
-                clearInterval(pomoInterval);
-                btnStart.textContent = "INICIAR";
-                btnStart.style.background = "var(--secondary)";
-            } else {
-                btnStart.textContent = "PAUSA";
-                btnStart.style.background = "#d4af37"; // Color pausa (dorado oscuro)
-                pomoInterval = setInterval(() => {
-                    pomoTime--;
-                    pomoDisplay.textContent = formatTime(pomoTime);
-                    if (pomoTime <= 0) {
-                        clearInterval(pomoInterval);
-                        alert("✅ POMODORO COMPLETADO");
-                        resetPomo();
+                const open = (id) => {
+                    const winEl = Utils.getElement(id);
+                    if (!winEl) return;
+                    
+                    // Smart Center Positioning (only if not already moved manually)
+                    if (!winEl.dataset.moved) {
+                        const rect = winEl.getBoundingClientRect();
+                        const x = (window.innerWidth - 340) / 2 + (Math.random() * 40 - 20); // 340 width + random offset
+                        const y = (window.innerHeight - 400) / 2 + (Math.random() * 40 - 20);
+                        winEl.style.left = `${Math.max(0, x)}px`;
+                        winEl.style.top = `${Math.max(0, y)}px`;
                     }
-                }, 1000);
-            }
-            isRunning = !isRunning;
-        });
+                    
+                    winEl.classList.remove('hidden'); // Ensure logic visibility
+                    // Small delay to allow CSS transition to play from display:block
+                    requestAnimationFrame(() => winEl.classList.add('open'));
+                    focus(winEl);
+                };
 
-        function resetPomo() {
-            clearInterval(pomoInterval);
-            pomoTime = 25 * 60;
-            pomoDisplay.textContent = "25:00";
-            isRunning = false;
-            btnStart.textContent = "INICIAR";
-            btnStart.style.background = "var(--secondary)";
-        }
+                const close = (id) => {
+                    const winEl = Utils.getElement(id);
+                    if (!winEl) return;
+                    winEl.classList.remove('open');
+                    // Optional: Listen for transitionend to add 'hidden' class if needed for performance
+                };
 
-        btnReset.addEventListener('click', resetPomo);
+                // Drag Logic
+                const initDrag = () => {
+                    document.addEventListener('mousedown', (e) => {
+                        // Check if header clicked
+                        const header = e.target.closest('.win-header');
+                        if (!header) return;
+                        
+                        const winEl = header.closest('.window');
+                        focus(winEl); // Focus on click
 
-        /* =========================================
-           3. BUSCADOR DE PROYECTOS
-           ========================================= */
-        const searchInput = document.getElementById('search-input');
-        const projectCards = document.querySelectorAll('.project-card');
+                        // Start dragging
+                        activeDrag = winEl;
+                        activeDrag.dataset.moved = "true";
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        initialLeft = winEl.offsetLeft;
+                        initialTop = winEl.offsetTop;
+                        
+                        e.preventDefault(); // Prevent text selection
+                    });
 
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
+                    document.addEventListener('mousemove', (e) => {
+                        if (!activeDrag) return;
 
-            projectCards.forEach(card => {
-                const title = card.querySelector('.card-title').innerText.toLowerCase();
-                const meta = card.querySelector('.card-meta').innerText.toLowerCase();
-                const tags = card.getAttribute('data-tags') || "";
-                
-                if (title.includes(query) || meta.includes(query) || tags.includes(query)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+                        const dx = e.clientX - startX;
+                        const dy = e.clientY - startY;
 
-        /* =========================================
-           4. GESTIÓN DE VENTANAS (DRAGGABLE)
-           ========================================= */
-        let zIndexCounter = 1000;
+                        // Calculate new pos
+                        let newLeft = initialLeft + dx;
+                        let newTop = initialTop + dy;
 
-        function openWindow(id) {
-            const win = document.getElementById(id);
-            win.style.display = 'flex';
-            bringToFront(win);
-        }
+                        // Viewport Boundary Constraints
+                        const maxLeft = window.innerWidth - activeDrag.offsetWidth;
+                        const maxTop = window.innerHeight - activeDrag.offsetHeight;
 
-        function closeWindow(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+                        newLeft = Utils.clamp(newLeft, 0, maxLeft);
+                        newTop = Utils.clamp(newTop, 0, maxTop);
 
-        function bringToFront(element) {
-            zIndexCounter++;
-            element.style.zIndex = zIndexCounter;
-        }
+                        activeDrag.style.left = `${newLeft}px`;
+                        activeDrag.style.top = `${newTop}px`;
+                    });
 
-        // Lógica de arrastre
-        document.querySelectorAll('.window').forEach(win => {
-            const header = win.querySelector('.window-header');
-            
-            // Traer al frente al hacer clic en cualquier parte de la ventana
-            win.addEventListener('mousedown', () => bringToFront(win));
+                    document.addEventListener('mouseup', () => {
+                        activeDrag = null;
+                    });
+                    
+                    // Handle window resize logic (optional reset)
+                    window.addEventListener('resize', () => {
+                        // Keep windows in bounds if resized
+                        document.querySelectorAll('.window').forEach(win => {
+                            const rect = win.getBoundingClientRect();
+                            if (rect.right > window.innerWidth) win.style.left = (window.innerWidth - rect.width) + 'px';
+                            if (rect.bottom > window.innerHeight) win.style.top = (window.innerHeight - rect.height) + 'px';
+                        });
+                    });
+                };
 
-            let isDragging = false;
-            let offsetX, offsetY;
+                return { open, close, initDrag };
+            })();
 
-            header.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                offsetX = e.clientX - win.offsetLeft;
-                offsetY = e.clientY - win.offsetTop;
-                header.style.cursor = 'grabbing';
-            });
+            // --- MODULE: SYSTEM CLOCK & ALARM ---
+            const SystemClock = (() => {
+                let alarmTime = null;
+                const clockEl = Utils.getElement('sys-clock');
+                const dateEl = Utils.getElement('sys-date');
+                const alarmInput = Utils.getElement('alarm-input');
+                const alarmMsg = Utils.getElement('alarm-msg');
+                const alarmBtn = Utils.getElement('alarm-set-btn');
 
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    win.style.left = `${e.clientX - offsetX}px`;
-                    win.style.top = `${e.clientY - offsetY}px`;
-                }
-            });
+                const update = () => {
+                    const now = new Date();
+                    clockEl.textContent = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    dateEl.textContent = now.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
 
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                header.style.cursor = 'grab';
-            });
-        });
+                    // Alarm Check
+                    if (alarmTime) {
+                        const currentHM = now.toTimeString().slice(0, 5);
+                        if (currentHM === alarmTime && now.getSeconds() === 0) {
+                            alert("🔔 SISTEMA: Alarma Activada");
+                            resetAlarm();
+                        }
+                    }
+                };
 
-        /* =========================================
-           5. CALCULADORA
-           ========================================= */
-        let calcBuffer = "";
-        const calcScreen = document.getElementById('calc-res');
+                const setAlarm = () => {
+                    if (alarmInput.value) {
+                        alarmTime = alarmInput.value;
+                        alarmMsg.textContent = `Activa: ${alarmTime}`;
+                        alarmMsg.classList.add('active');
+                        alarmBtn.textContent = "CANCELAR";
+                    } else {
+                        resetAlarm();
+                    }
+                };
 
-        function calcInput(val) {
-            calcBuffer += val;
-            calcScreen.innerText = calcBuffer;
-        }
+                const resetAlarm = () => {
+                    alarmTime = null;
+                    alarmMsg.textContent = "Inactivo";
+                    alarmMsg.classList.remove('active');
+                    alarmBtn.textContent = "ACTIVAR";
+                    alarmInput.value = "";
+                };
 
-        function calcClear() {
-            calcBuffer = "";
-            calcScreen.innerText = "0";
-        }
+                const init = () => {
+                    setInterval(update, 1000);
+                    update();
+                    alarmBtn.addEventListener('click', () => {
+                        if (alarmTime) resetAlarm(); else setAlarm();
+                    });
+                };
 
-        function calcResult() {
-            try {
-                // Nota: eval es peligroso en producción real, seguro para esta demo local controlada
-                calcBuffer = eval(calcBuffer).toString();
-                calcScreen.innerText = calcBuffer;
-            } catch {
-                calcScreen.innerText = "Error";
-                calcBuffer = "";
-            }
-        }
+                return { init };
+            })();
+
+            // --- MODULE: POMODORO ---
+            const Pomodoro = (() => {
+                let time = 1500; // 25 min
+                let interval = null;
+                let isRunning = false;
+                const display = Utils.getElement('pomo-display');
+                const btnToggle = Utils.getElement('pomo-toggle');
+                const btnReset = Utils.getElement('pomo-reset');
+
+                const format = (s) => {
+                    const m = Math.floor(s / 60);
+                    const sec = s % 60;
+                    return `${Utils.padTime(m)}:${Utils.padTime(sec)}`;
+                };
+
+                const tick = () => {
+                    if (time > 0) {
+                        time--;
+                        display.textContent = format(time);
+                        document.title = `(${format(time)}) Focus`;
+                    } else {
+                        pause();
+                        alert("Focus Session Complete");
+                        document.title = "Cyber-Tech OS";
+                        reset();
+                    }
+                };
+
+                const toggle = () => {
+                    if (isRunning) pause(); else start();
+                };
+
+                const start = () => {
+                    isRunning = true;
+                    btnToggle.textContent = "PAUSE";
+                    interval = setInterval(tick, 1000);
+                };
+
+                const pause = () => {
+                    isRunning = false;
+                    btnToggle.textContent = "RESUME";
+                    clearInterval(interval);
+                };
+
+                const reset = () => {
+                    pause();
+                    time = 1500;
+                    display.textContent = "25:00";
+                    btnToggle.textContent = "START";
+                    document.title = "Cyber-Tech OS";
+                };
+
+                const init = () => {
+                    btnToggle.addEventListener('click', toggle);
+                    btnReset.addEventListener('click', reset);
+                };
+
+                return { init };
+            })();
+
+            // --- MODULE: SEARCH ENGINE ---
+            const ProjectSearch = (() => {
+                const init = () => {
+                    const input = Utils.getElement('projectSearch');
+                    const grid = Utils.getElement('projectGrid');
+                    const cards = grid.querySelectorAll('.project-card');
+
+                    input.addEventListener('input', (e) => {
+                        const term = e.target.value.toLowerCase();
+                        
+                        cards.forEach(card => {
+                            const title = card.querySelector('.card-title').innerText.toLowerCase();
+                            const body = card.querySelector('.card-body').innerText.toLowerCase();
+                            const tags = card.dataset.tags || "";
+                            
+                            const match = title.includes(term) || body.includes(term) || tags.includes(term);
+                            
+                            // Use CSS class for better performance than inline styles
+                            if (match) card.classList.remove('hidden');
+                            else card.classList.add('hidden');
+                        });
+                    });
+                };
+                return { init };
+            })();
+
+            // --- MODULE: APPS (Calculator) ---
+            const Apps = {
+                Calculator: (() => {
+                    let current = "0";
+                    const display = Utils.getElement('calc-display');
+
+                    const isOp = (char) => ['+', '-', '*', '/'].includes(char);
+
+                    const input = (val) => {
+                        if (current === "0" && !isOp(val)) current = "";
+                        
+                        // Prevent double operators logic
+                        const lastChar = current.slice(-1);
+                        if (isOp(lastChar) && isOp(val)) {
+                            // Replace last operator
+                            current = current.slice(0, -1) + val;
+                        } else {
+                            current += val;
+                        }
+                        update();
+                    };
+
+                    const clear = () => {
+                        current = "0";
+                        update();
+                    };
+
+                    const calculate = () => {
+                        try {
+                            // Sanitization: allow only numbers and math ops
+                            if (/[^0-9+\-*/.]/.test(current)) throw new Error("Invalid");
+                            
+                            // Safe evaluation function constructor instead of direct eval
+                            // (Still use with caution, but better than raw eval)
+                            const result = new Function('return ' + current)(); 
+                            
+                            // Check for Infinity/NaN
+                            if (!isFinite(result)) throw new Error("Math Error");
+                            
+                            current = result.toString();
+                        } catch (e) {
+                            current = "Err";
+                            setTimeout(clear, 1500);
+                        }
+                        update();
+                    };
+
+                    const update = () => display.innerText = current;
+
+                    return { input, clear, calculate };
+                })()
+            };
+
+            // --- INITIALIZATION ---
+            const init = () => {
+                WindowManager.initDrag();
+                SystemClock.init();
+                Pomodoro.init();
+                ProjectSearch.init();
+            };
+
+            // Expose Public API
+            return {
+                init,
+                WindowManager,
+                Apps
+            };
+        })();
+
+        // Boot System
+        document.addEventListener('DOMContentLoaded', CyberOS.init);
+
     </script>
 </body>
 </html>
