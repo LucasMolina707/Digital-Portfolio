@@ -3,276 +3,787 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Portfolio | OS Interface</title>
+    <title>Cyber-Tech OS | Portfolio Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* =========================================
+           1. VARIABLES & RESET
+           ========================================= */
         :root {
-            --negro: #050505;
-            --azul-electrico: #00d4ff;
-            --morado-tech: #9d00ff;
-            --plata: #e0e0e0;
-            --blanco: #ffffff;
-            --glass: rgba(255, 255, 255, 0.05);
+            --bg-color: #050505;
+            --primary: #00d4ff;     /* Azul Neón */
+            --secondary: #9d00ff;   /* Morado Tech */
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --blur: 12px;
+            --shadow-glow: 0 0 15px rgba(0, 212, 255, 0.2);
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary) var(--bg-color);
         }
 
         body {
-            background-color: var(--negro);
-            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
-            color: var(--plata);
-            font-family: 'Segoe UI', Consolas, sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
             height: 100vh;
+            overflow: hidden; /* Evita scroll en el body, scrolleamos secciones internas */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(157, 0, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.08) 0%, transparent 20%);
         }
 
-        /* --- BARRA DE TAREAS (TOP BAR) --- */
-        .taskbar {
-            background: rgba(0, 0, 0, 0.8);
-            border-bottom: 1px solid var(--azul-electrico);
-            padding: 10px 20px;
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
+
+        /* =========================================
+           2. LAYOUT PRINCIPAL
+           ========================================= */
+        .os-container {
+            display: grid;
+            grid-template-columns: 80px 1fr 300px; /* Layout Tripartito */
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        /* Mixin Glassmorphism */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+        }
+
+        /* =========================================
+           3. PANEL IZQUIERDO - LAUNCHER
+           ========================================= */
+        .launcher {
             align-items: center;
-            backdrop-filter: blur(10px);
+            padding-top: 30px;
+            gap: 25px;
             z-index: 100;
         }
 
-        .os-title {
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: var(--blanco);
-            text-shadow: 0 0 10px var(--azul-electrico);
+        .app-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            border: 1px solid transparent;
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .main-desktop {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-            padding: 20px;
-            flex-grow: 1;
-            overflow: hidden;
+        .app-icon:hover {
+            background: rgba(0, 212, 255, 0.15);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        /* --- SECCIÓN DE ENTRADAS --- */
-        .content-area {
+        .app-icon::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 60px;
+            background: var(--secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .app-icon:hover::after { opacity: 1; }
+
+        /* =========================================
+           4. PANEL CENTRAL - EXPLORADOR DE PROYECTOS
+           ========================================= */
+        .explorer {
+            padding: 25px;
+            position: relative;
             overflow-y: auto;
-            padding-right: 10px;
         }
 
-        .search-container {
+        .explorer-header {
             margin-bottom: 30px;
         }
 
-        #searchInput {
-            width: 100%;
-            padding: 12px 20px;
-            background: var(--glass);
-            border: 1px solid var(--morado-tech);
-            border-radius: 5px;
-            color: var(--blanco);
-            outline: none;
-            transition: 0.3s;
+        h1 {
+            font-family: var(--font-head);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        #searchInput:focus { border-color: var(--azul-electrico); box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); }
+        .search-bar {
+            position: relative;
+            max-width: 600px;
+        }
 
-        .grid-container {
+        .search-bar input {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            padding: 12px 45px 12px 20px;
+            border-radius: 30px;
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .search-bar i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        /* GRID DE PROYECTOS */
+        .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
 
-        .card {
-            background: var(--glass);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            transition: 0.3s;
+        .project-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s, background 0.3s, border-color 0.3s;
             position: relative;
-            backdrop-filter: blur(5px);
+            overflow: hidden;
         }
 
-        .card:hover {
-            border-color: var(--azul-electrico);
-            transform: scale(1.02);
-            background: rgba(157, 0, 255, 0.05);
+        .project-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--secondary);
         }
 
-        .card h2 { color: var(--azul-electrico); font-size: 1.2rem; margin: 5px 0; }
-        .card .category { font-size: 0.7rem; text-transform: uppercase; color: var(--morado-tech); font-weight: bold; }
-        .card a { color: var(--blanco); text-decoration: none; font-size: 0.9rem; border: 1px solid var(--morado-tech); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; }
-        .card a:hover { background: var(--morado-tech); }
-
-        /* --- SIDEBAR (WIDGETS) --- */
-        .sidebar {
+        .card-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .folder-icon { color: var(--secondary); font-size: 1.5rem; }
+        .external-link { color: var(--text-dim); cursor: pointer; transition: color 0.2s; }
+        .external-link:hover { color: var(--primary); }
+
+        .card-title {
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .card-meta {
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            background: var(--primary);
+            color: black;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* =========================================
+           5. PANEL DERECHO - UTILIDADES
+           ========================================= */
+        .utilities {
+            padding: 20px;
             gap: 20px;
+            overflow-y: auto;
         }
 
         .widget {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid #444;
-            border-radius: 10px;
-            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .widget-title {
+            font-family: var(--font-head);
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 5px;
+        }
+
+        /* Reloj */
+        #clock-display {
+            font-family: var(--font-head);
+            font-size: 2.2rem;
             text-align: center;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+        }
+        #date-display {
+            text-align: center;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            margin-top: 5px;
         }
 
-        #clock { font-size: 2rem; color: var(--azul-electrico); font-family: 'Courier New', Courier, monospace; }
-        #date { color: var(--plata); margin-bottom: 10px; }
-
-        /* Alarma / Timer */
-        .alarm-widget {
-            border-left: 4px solid var(--morado-tech);
+        /* Pomodoro */
+        .pomodoro-display {
+            font-size: 2rem;
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
+            font-variant-numeric: tabular-nums;
         }
-
-        .timer-display { font-size: 1.5rem; margin: 10px 0; color: var(--blanco); }
-        
-        button.btn-os {
-            background: transparent;
-            border: 1px solid var(--azul-electrico);
-            color: var(--azul-electrico);
-            padding: 8px 15px;
+        .pomodoro-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn-pomo {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-start { background: var(--secondary); color: white; }
+        .btn-start:hover { box-shadow: 0 0 10px var(--secondary); }
+        .btn-reset { background: rgba(255,255,255,0.1); color: var(--text-main); }
+
+        /* Alarma */
+        .alarm-input {
             width: 100%;
-            border-radius: 4px;
-            transition: 0.3s;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        #alarm-status {
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 1.2em;
+            color: var(--primary);
         }
 
-        button.btn-os.active { background: var(--azul-electrico); color: var(--negro); }
-        button.btn-os:disabled { border-color: #555; color: #555; }
+        /* =========================================
+           6. VENTANAS FLOTANTES (OS UX)
+           ========================================= */
+        .window {
+            position: absolute;
+            background: #0a0a0f; /* Fondo más sólido para legibilidad */
+            width: 320px;
+            border-radius: 10px;
+            border: 1px solid var(--secondary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            top: 20%;
+            left: 30%;
+            display: none; /* Oculto por defecto */
+            z-index: 1000;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
 
-        /* Scrollbar Personalizada */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--negro); }
-        ::-webkit-scrollbar-thumb { background: var(--morado-tech); border-radius: 10px; }
+        .window-header {
+            background: rgba(157, 0, 255, 0.2);
+            padding: 10px 15px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        
+        .window-header:active { cursor: grabbing; }
+
+        .window-title { font-family: var(--font-head); font-size: 0.85rem; color: white; }
+        
+        .btn-close {
+            color: #ff5f56;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .window-body {
+            padding: 15px;
+            color: var(--text-main);
+        }
+
+        /* Estilos Calculadora */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .calc-display {
+            grid-column: span 4;
+            background: rgba(0,0,0,0.5);
+            color: var(--primary);
+            text-align: right;
+            padding: 10px;
+            font-size: 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        .btn-calc {
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-calc:hover { background: rgba(255,255,255,0.2); }
+        .btn-calc.accent { background: var(--secondary); }
+
+        /* Estilos Notas */
+        textarea.notes-area {
+            width: 100%;
+            height: 200px;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            resize: none;
+            outline: none;
+            font-family: var(--font-body);
+        }
+
+        /* =========================================
+           7. RESPONSIVE
+           ========================================= */
+        @media (max-width: 900px) {
+            .os-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            body { overflow: auto; } /* Permitir scroll en móvil */
+
+            .launcher {
+                flex-direction: row;
+                padding: 10px;
+                height: auto;
+                justify-content: space-around;
+            }
+
+            .window {
+                width: 90%;
+                left: 5% !important;
+                top: 10% !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="taskbar">
-    <div class="os-title">DIGITAL PORTFOLIO v1.0</div>
-    <div id="status-light" style="color: var(--azul-electrico); font-size: 0.8rem;">● SYSTEM ONLINE</div>
-</div>
-
-<main class="main-desktop">
-    <section class="content-area">
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Ejecutar búsqueda de archivos (título, categoría, tags)...">
-        </div>
-
-        <div class="grid-container" id="gridEntries">
-            <article class="card" data-keywords="google buscar" data-category="Web" data-date="2026-01-27">
-                <span class="category">Web</span>
-                <h2>Google Access</h2>
-                <p>Navegador de búsqueda global.</p>
-                <a href="https://google.com" target="_blank">EJECUTAR</a>
-            </article>
-
-            <article class="card" data-keywords="ia gemini" data-category="AI" data-date="2026-01-28">
-                <span class="category">AI</span>
-                <h2>Gemini Terminal</h2>
-                <p>Inteligencia artificial avanzada.</p>
-                <a href="https://gemini.google.com" target="_blank">EJECUTAR</a>
-            </article>
-
+    <div class="os-container">
+        <aside class="glass-panel launcher">
+            <div class="app-icon" data-tooltip="Calculadora" onclick="openWindow('window-calc')">
+                <i class="fa-solid fa-calculator"></i>
             </div>
-        <p id="noResults" style="display:none; text-align: center; color: var(--morado-tech);">SIN COINCIDENCIAS EN EL SISTEMA</p>
-    </section>
+            <div class="app-icon" data-tooltip="Notas" onclick="openWindow('window-notes')">
+                <i class="fa-solid fa-note-sticky"></i>
+            </div>
+            <div class="app-icon" data-tooltip="Github" onclick="window.open('https://github.com', '_blank')">
+                <i class="fa-brands fa-github"></i>
+            </div>
+        </aside>
 
-    <aside class="sidebar">
-        <div class="widget">
-            <div id="date">--/--/----</div>
-            <div id="clock">00:00:00</div>
-        </div>
+        <main class="glass-panel explorer">
+            <div class="explorer-header">
+                <h1>// PROYECTOS_</h1>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Buscar por nombre, categoría o tecnología...">
+                    <i class="fa-solid fa-search"></i>
+                </div>
+            </div>
 
-        <div class="widget alarm-widget">
-            <div style="font-size: 0.8rem; color: var(--morado-tech);">ENFOQUE DE TRABAJO</div>
-            <div class="timer-display" id="timer">25:00</div>
-            <button class="btn-os" id="startBtn">ACTIVAR ALARMA</button>
-            <p id="alarmMsg" style="font-size: 0.7rem; margin-top: 10px; color: #888;">Ciclo: 25 min</p>
-        </div>
-    </aside>
-</main>
+            <div class="projects-grid" id="projects-container">
+                
+                <article class="project-card" data-tags="react frontend dashboard">
+                    <div class="card-header">
+                        <i class="fa-regular fa-folder-open folder-icon"></i>
+                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
+                    </div>
+                    <h3 class="card-title">Cyber Dashboard UI</h3>
+                    <span class="card-meta">Dashboard • 2023</span>
+                    <p class="card-desc">Interfaz administrativa React con visualización de datos en tiempo real y tema oscuro.</p>
+                    <div class="card-footer">
+                        <a href="#" class="btn-action">Ver Demo</a>
+                    </div>
+                </article>
 
-<script>
-    // --- LÓGICA DEL RELOJ Y CALENDARIO ---
-    function updateClock() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2, '0');
-        const m = String(now.getMinutes()).padStart(2, '0');
-        const s = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('clock').textContent = `${h}:${m}:${s}`;
-        
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('date').textContent = now.toLocaleDateString('es-ES', options);
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+                <article class="project-card" data-tags="api backend nodejs">
+                    <div class="card-header">
+                        <i class="fa-solid fa-server folder-icon"></i>
+                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
+                    </div>
+                    <h3 class="card-title">Nexus API</h3>
+                    <span class="card-meta">Backend • 2024</span>
+                    <p class="card-desc">API RESTful escalable construida con Node.js, Express y MongoDB con autenticación JWT.</p>
+                    <div class="card-footer">
+                        <a href="#" class="btn-action">Docs</a>
+                    </div>
+                </article>
 
-    // --- LÓGICA DEL BUSCADOR ---
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        let filter = this.value.toLowerCase();
-        let cards = document.querySelectorAll('.card');
-        let visibleCount = 0;
+                <article class="project-card" data-tags="threejs 3d design">
+                    <div class="card-header">
+                        <i class="fa-solid fa-cube folder-icon"></i>
+                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
+                    </div>
+                    <h3 class="card-title">Holo-Viewer 3D</h3>
+                    <span class="card-meta">WebGL • 2023</span>
+                    <p class="card-desc">Visor de modelos 3D interactivo utilizando Three.js con soporte para texturas PBR.</p>
+                    <div class="card-footer">
+                        <a href="#" class="btn-action">Explorar</a>
+                    </div>
+                </article>
 
-        cards.forEach(card => {
-            let text = card.innerText.toLowerCase() + card.getAttribute('data-keywords').toLowerCase();
-            if (text.includes(filter)) {
-                card.style.display = "";
-                visibleCount++;
-            } else {
-                card.style.display = "none";
-            }
-        });
-        document.getElementById('noResults').style.display = visibleCount === 0 ? "block" : "none";
-    });
+                <article class="project-card" data-tags="ai python machine learning">
+                    <div class="card-header">
+                        <i class="fa-solid fa-brain folder-icon"></i>
+                        <i class="fa-solid fa-arrow-up-right-from-square external-link"></i>
+                    </div>
+                    <h3 class="card-title">NeuroPrediction</h3>
+                    <span class="card-meta">AI • 2024</span>
+                    <p class="card-desc">Modelo de predicción de series temporales utilizando Python y TensorFlow.</p>
+                    <div class="card-footer">
+                        <a href="#" class="btn-action">Repo</a>
+                    </div>
+                </article>
+            </div>
+        </main>
 
-    // --- LÓGICA DE ALARMA (POMODORO 25 MIN) ---
-    let timerInterval;
-    let timeLeft = 25 * 60;
-    let isRunning = false;
-
-    const timerDisplay = document.getElementById('timer');
-    const startBtn = document.getElementById('startBtn');
-
-    startBtn.addEventListener('click', () => {
-        if (!isRunning) {
-            isRunning = true;
-            startBtn.textContent = "DESACTIVAR / REINICIAR";
-            startBtn.classList.add('active');
+        <aside class="glass-panel utilities">
             
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert("¡Alarma! Han pasado 25 minutos de enfoque.");
-                    resetTimer();
+            <div class="widget">
+                <div class="widget-title">Sistema :: Hora Local</div>
+                <div id="clock-display">00:00:00</div>
+                <div id="date-display">Cargando fecha...</div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-title">Focus :: Protocol</div>
+                <div class="pomodoro-display" id="pomo-timer">25:00</div>
+                <div class="pomodoro-controls">
+                    <button class="btn-pomo btn-start" id="btn-pomo-start">INICIAR</button>
+                    <button class="btn-pomo btn-reset" id="btn-pomo-reset">RESET</button>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-title">Alerta :: Prog</div>
+                <input type="time" class="alarm-input" id="alarm-input">
+                <div id="alarm-status">--:--</div>
+            </div>
+
+        </aside>
+    </div>
+
+    <div class="window" id="window-calc">
+        <div class="window-header" id="header-calc">
+            <span class="window-title">CALC.EXE</span>
+            <i class="fa-solid fa-xmark btn-close" onclick="closeWindow('window-calc')"></i>
+        </div>
+        <div class="window-body">
+            <div class="calc-display" id="calc-res">0</div>
+            <div class="calc-grid">
+                <button class="btn-calc" onclick="calcInput('7')">7</button>
+                <button class="btn-calc" onclick="calcInput('8')">8</button>
+                <button class="btn-calc" onclick="calcInput('9')">9</button>
+                <button class="btn-calc accent" onclick="calcInput('/')">÷</button>
+                <button class="btn-calc" onclick="calcInput('4')">4</button>
+                <button class="btn-calc" onclick="calcInput('5')">5</button>
+                <button class="btn-calc" onclick="calcInput('6')">6</button>
+                <button class="btn-calc accent" onclick="calcInput('*')">×</button>
+                <button class="btn-calc" onclick="calcInput('1')">1</button>
+                <button class="btn-calc" onclick="calcInput('2')">2</button>
+                <button class="btn-calc" onclick="calcInput('3')">3</button>
+                <button class="btn-calc accent" onclick="calcInput('-')">-</button>
+                <button class="btn-calc" onclick="calcInput('0')">0</button>
+                <button class="btn-calc" onclick="calcClear()">C</button>
+                <button class="btn-calc accent" onclick="calcResult()">=</button>
+                <button class="btn-calc accent" onclick="calcInput('+')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="window-notes">
+        <div class="window-header" id="header-notes">
+            <span class="window-title">NOTES.TXT</span>
+            <i class="fa-solid fa-xmark btn-close" onclick="closeWindow('window-notes')"></i>
+        </div>
+        <div class="window-body">
+            <textarea class="notes-area" placeholder="Escribe tus ideas aquí..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================
+           1. RELOJ Y ALARMA
+           ========================================= */
+        let alarmTime = null;
+        const alarmInput = document.getElementById('alarm-input');
+        const alarmStatus = document.getElementById('alarm-status');
+
+        function updateClock() {
+            const now = new Date();
+            // Hora
+            const timeString = now.toLocaleTimeString('es-ES', { hour12: false });
+            document.getElementById('clock-display').textContent = timeString;
+            
+            // Fecha
+            const dateString = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('date-display').textContent = dateString;
+
+            // Chequeo Alarma
+            if (alarmTime) {
+                const currentHM = now.toTimeString().slice(0, 5); // HH:MM
+                if (currentHM === alarmTime && now.getSeconds() === 0) {
+                    alert('⚠️ ALERTA DEL SISTEMA: Hora programada alcanzada.');
+                    alarmTime = null; // Resetear alarma
+                    alarmStatus.textContent = "Alarma finalizada";
+                    alarmStatus.style.color = "var(--text-dim)";
                 }
-            }, 1000);
-        } else {
-            resetTimer();
+            }
         }
-    });
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        isRunning = false;
-        timeLeft = 25 * 60;
-        updateTimerDisplay();
-        startBtn.textContent = "ACTIVAR ALARMA";
-        startBtn.classList.remove('active');
-    }
+        alarmInput.addEventListener('change', (e) => {
+            alarmTime = e.target.value;
+            alarmStatus.textContent = `Alarma activa: ${alarmTime}`;
+            alarmStatus.style.color = "var(--primary)";
+        });
 
-    function updateTimerDisplay() {
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-</script>
+        setInterval(updateClock, 1000);
+        updateClock();
 
+        /* =========================================
+           2. POMODORO TIMER
+           ========================================= */
+        let pomoInterval;
+        let pomoTime = 25 * 60; // 25 minutos en segundos
+        let isRunning = false;
+
+        const pomoDisplay = document.getElementById('pomo-timer');
+        const btnStart = document.getElementById('btn-pomo-start');
+        const btnReset = document.getElementById('btn-pomo-reset');
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        btnStart.addEventListener('click', () => {
+            if (isRunning) {
+                clearInterval(pomoInterval);
+                btnStart.textContent = "INICIAR";
+                btnStart.style.background = "var(--secondary)";
+            } else {
+                btnStart.textContent = "PAUSA";
+                btnStart.style.background = "#d4af37"; // Color pausa (dorado oscuro)
+                pomoInterval = setInterval(() => {
+                    pomoTime--;
+                    pomoDisplay.textContent = formatTime(pomoTime);
+                    if (pomoTime <= 0) {
+                        clearInterval(pomoInterval);
+                        alert("✅ POMODORO COMPLETADO");
+                        resetPomo();
+                    }
+                }, 1000);
+            }
+            isRunning = !isRunning;
+        });
+
+        function resetPomo() {
+            clearInterval(pomoInterval);
+            pomoTime = 25 * 60;
+            pomoDisplay.textContent = "25:00";
+            isRunning = false;
+            btnStart.textContent = "INICIAR";
+            btnStart.style.background = "var(--secondary)";
+        }
+
+        btnReset.addEventListener('click', resetPomo);
+
+        /* =========================================
+           3. BUSCADOR DE PROYECTOS
+           ========================================= */
+        const searchInput = document.getElementById('search-input');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+
+            projectCards.forEach(card => {
+                const title = card.querySelector('.card-title').innerText.toLowerCase();
+                const meta = card.querySelector('.card-meta').innerText.toLowerCase();
+                const tags = card.getAttribute('data-tags') || "";
+                
+                if (title.includes(query) || meta.includes(query) || tags.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        /* =========================================
+           4. GESTIÓN DE VENTANAS (DRAGGABLE)
+           ========================================= */
+        let zIndexCounter = 1000;
+
+        function openWindow(id) {
+            const win = document.getElementById(id);
+            win.style.display = 'flex';
+            bringToFront(win);
+        }
+
+        function closeWindow(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function bringToFront(element) {
+            zIndexCounter++;
+            element.style.zIndex = zIndexCounter;
+        }
+
+        // Lógica de arrastre
+        document.querySelectorAll('.window').forEach(win => {
+            const header = win.querySelector('.window-header');
+            
+            // Traer al frente al hacer clic en cualquier parte de la ventana
+            win.addEventListener('mousedown', () => bringToFront(win));
+
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            header.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - win.offsetLeft;
+                offsetY = e.clientY - win.offsetTop;
+                header.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    win.style.left = `${e.clientX - offsetX}px`;
+                    win.style.top = `${e.clientY - offsetY}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                header.style.cursor = 'grab';
+            });
+        });
+
+        /* =========================================
+           5. CALCULADORA
+           ========================================= */
+        let calcBuffer = "";
+        const calcScreen = document.getElementById('calc-res');
+
+        function calcInput(val) {
+            calcBuffer += val;
+            calcScreen.innerText = calcBuffer;
+        }
+
+        function calcClear() {
+            calcBuffer = "";
+            calcScreen.innerText = "0";
+        }
+
+        function calcResult() {
+            try {
+                // Nota: eval es peligroso en producción real, seguro para esta demo local controlada
+                calcBuffer = eval(calcBuffer).toString();
+                calcScreen.innerText = calcBuffer;
+            } catch {
+                calcScreen.innerText = "Error";
+                calcBuffer = "";
+            }
+        }
+    </script>
 </body>
 </html>
